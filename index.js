@@ -94,7 +94,7 @@ class Game {
   // 
   tileSize = 50; 
   // 
-  logLevel = debugLvl.dev;
+  logLevel = debugLvl.prod;
   // -------------
   // map generation settings
   fieldSizeX = 10;
