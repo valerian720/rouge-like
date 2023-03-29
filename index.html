@@ -27,20 +27,22 @@ h1 { font-family: "Playfair Display"; font-size: 30px; padding: 10px 0px; margin
 .field .tileP .health { background-color: #00ff00; z-index: 11; position: absolute; left: 0px; top: 0px; height: 3px; }
 .inventory-box { border: 2px solid #d0d0d0; float: left; }
 .inventory { position: relative; width: 800px; height: 32px; }
+span {margin:1em; padding:1em;}
 .cl { clear: both; display: block; }
 </style>
 	</head>
 	<body>
 		<h1>Игровое поле</h1>
+		<h2>wasd - перемещение, пробел - атака, r - перейти на новый уровень (с увеличением сложности)</h2>
 		<div class="field-box">
 			<div class="field">
 				
 			</div>
 		</div>
 		<div class="cl"></div>
-		<h1>Инвентарь</h1>
+		<h1>Подземелье:</h1>
 		<div class="inventory-box"><div class="inventory"></div></div>
-
+		
 		<script>
 
 			var game=new Game();
