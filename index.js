@@ -235,7 +235,7 @@ class Game {
     for (let i = 0; i < this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel); i++) {
       if (i < this.enemiesList.length) {
         let curEnemy = randomChoice(enemyToMoveList);
-        this.LogObject(`selected enemy to act (${i} of ${this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, debugLvl.full);
+        this.LogObject(`selected enemy to act (${i+1} of ${this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, debugLvl.full);
 
         var index = enemyToMoveList.indexOf(curEnemy);
           if (index !== -1) {
