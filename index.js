@@ -22,9 +22,18 @@ class Vector2 {
   }
 }
 
+function Enum(values){
+  const enumObject = values.reduce((obj, cur, i) => ({ ...obj, [cur]: i }), {});;
+  return Object.freeze(enumObject);
+}
+
+randomInRange = (min, max) => Math.floor(Math.random() * (max - min)) + min;
+randomChoice = (arr) => arr[Math.floor(arr.length * Math.random())];
+
+// ---------------------------
 class Enemy {
   health = 50;
-  damage = 10;
+  damage = 15;
 
   minHealth = 20;
   maxHealth = 60;
@@ -66,14 +75,6 @@ class Enemy {
     return ret;
   }
 }
-
-function Enum(values){
-  const enumObject = values.reduce((obj, cur, i) => ({ ...obj, [cur]: i }), {});;
-  return Object.freeze(enumObject);
-}
-
-randomInRange = (min, max) => Math.floor(Math.random() * (max - min)) + min;
-randomChoice = (arr) => arr[Math.floor(arr.length * Math.random())];
 
 const debugLvl = Enum(['full', 'dev', 'prod', 'none']);
 
@@ -191,25 +192,29 @@ class Game {
       (e) => {
         switch (e.key) {
           case 'w':
+          case 'ц':
             this.moveTile(this.playerPosition, -1, 0);
             break;
           case 'a':
+          case 'ф':
             this.moveTile(this.playerPosition, 0, -1);
             break;
         
           case 's':
+          case 'ы':
             this.moveTile(this.playerPosition, 1, 0);
             break;
         
-            case 'd':
+          case 'd':
+          case 'в':
             this.moveTile(this.playerPosition, 0, 1);
             break;
           
-            case ' ':
+          case ' ':
             this.playerAttack();
             break;
           
-            case 'r':
+          case 'r':
             this.progressLevel();
             break;
         
@@ -224,9 +229,16 @@ class Game {
   }
   
   enemyTick() {
+    let enemyToMoveList = [...this.enemiesList];
     for (let i = 0; i < this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel); i++) {
       if (i< this.enemiesList.length) {
-        let curEnemy = randomChoice(this.enemiesList); // TODO: one enemy could make several moves per enemyTick
+        let curEnemy = randomChoice(enemyToMoveList);
+
+        var index = enemyToMoveList.indexOf(curEnemy);
+          if (index !== -1) {
+            enemyToMoveList.splice(index, 1);
+          }
+
         let rndX = randomInRange(1, 4)-2;
         let rndY = randomInRange(1, 4) - 2;
 
@@ -268,15 +280,15 @@ class Game {
   spriteLogicCanGo(originalSprite, nextSprite) { // ret true / false
     let ret = true;
 
-    if (originalSprite == this.tileWall)
+    if (originalSprite === this.tileWall)
       ret = false;
-    if (originalSprite == this.tileBase)
+    if (originalSprite === this.tileBase)
       ret = false;
-    if (nextSprite == this.tileWall)
+    if (nextSprite === this.tileWall)
       ret = false;
-    if (nextSprite == this.tileEnemy)
+    if (nextSprite === this.tileEnemy)
       ret = false;
-    if (nextSprite == this.tilePlayer)
+    if (nextSprite === this.tilePlayer)
       ret = false;
 
     return ret;
@@ -292,20 +304,20 @@ class Game {
     return ret;
   }
   spriteLogicAdditional(originalSprite, nextSprite, originalPos, deltaX, deltaY) { // run needed function
-    if (originalSprite == this.tilePlayer) {
-      if (nextSprite == this.tileEnemy) {
+    if (originalSprite === this.tilePlayer) {
+      if (nextSprite === this.tileEnemy) {
         this.decreaseHealth(originalPos, deltaX, deltaY);
       }
-      if (nextSprite == this.tileHealthPotion) {
+      if (nextSprite === this.tileHealthPotion) {
         this.increaseHealth();
       }
-      if (nextSprite == this.tileSword) {
+      if (nextSprite === this.tileSword) {
         this.increaseDamage();
       }
     }
 
-    if (originalSprite == this.tileEnemy) {
-      if (nextSprite == this.tilePlayer) {
+    if (originalSprite === this.tileEnemy) {
+      if (nextSprite === this.tilePlayer) {
         this.decreaseHealth(originalPos, deltaX, deltaY);
       }
     }
@@ -533,7 +545,7 @@ class Game {
           var healthElement = document.createElement("div");
           healthElement.classList.add("health");
           let displayedHealth = this.playerHealth;
-          if (this.lookUpTypes[val] == this.tileEnemy) {
+          if (this.lookUpTypes[val] === this.tileEnemy) {
             displayedHealth = this.enemies[i][j].health;
           }
           healthElement.style['width'] = `${this.tileSize * displayedHealth / 100}px`;
