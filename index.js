@@ -76,7 +76,7 @@ class Enemy {
   }
 }
 
-const debugLvl = Enum(['full', 'dev', 'prod', 'none']);
+const logLevels = Enum(['full', 'dev', 'prod', 'none']);
 
 class Game {
   // 
@@ -95,7 +95,7 @@ class Game {
   // 
   tileSize = 50; 
   // 
-  logLevel = debugLvl.prod;
+  logLevel = logLevels.prod;
   // -------------
   // map generation settings
   fieldSizeX = 10;
@@ -148,14 +148,14 @@ class Game {
 
 
   constructor() {
-    this.Log('Starting...', debugLvl.prod);
+    this.Log('Starting...', logLevels.prod);
     this.captureRoot();
     // 
     this.playerMoveBind();
   }
 
   init() {
-    this.Log('initialising game...', debugLvl.prod);
+    this.Log('initialising game...', logLevels.prod);
     // 
     this.playerHealth = this.maxPlayerHealth;
     this.playerDamage = this.maxPlayerDamage;
@@ -236,7 +236,7 @@ class Game {
       if (i < this.enemiesList.length) {
         let curEnemy = randomChoice(enemyToMoveList);
         if (curEnemy !== null) {
-          this.LogObject(`selected enemy to act (${i+1} of ${this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, debugLvl.full);
+          this.LogObject(`selected enemy to act (${i+1} of ${this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, logLevels.full);
 
           var index = enemyToMoveList.indexOf(curEnemy);
             if (index !== -1) {
@@ -245,18 +245,18 @@ class Game {
 
           let rndX = randomInRange(-1, 2);
           let rndY = randomInRange(-1, 2);
-          this.Log(`enemy will move by ${rndX}(x) ${rndY}(y)`, debugLvl.full);
+          this.Log(`enemy will move by ${rndX}(x) ${rndY}(y)`, logLevels.full);
 
           if ((curEnemy.position.minus(this.playerPosition)).length < this.enemySearchRadius) { // semi random direction if in activation radius
             var dirVector = curEnemy.position.minus(this.playerPosition).normalizeRound();
             rndX = dirVector.x;
             rndY = dirVector.y;
-            this.Log(`player detected, enemy will move by ${rndX}(x) ${rndY}(y)`, debugLvl.full);
+            this.Log(`player detected, enemy will move by ${rndX}(x) ${rndY}(y)`, logLevels.full);
           }
 
           let hasMoved = this.moveTile(curEnemy.position, rndX, rndY);
           if (hasMoved) {
-            this.Log(`enemy move is succesfull`, debugLvl.full);
+            this.Log(`enemy move is succesfull`, logLevels.full);
             let curPosition = curEnemy.position;
             this.enemies[curPosition.x][curPosition.y] = curEnemy; // add cur pos after move
             this.enemies[curPosition.x-rndX][curPosition.y-rndY] = null; // remove previous pos after move
@@ -378,12 +378,12 @@ class Game {
           // have found enemy
           let enemy = this.enemies[i][j];
           enemy.receaveDamage(this.playerDamage);
-          this.Log(`attacked enemy by ${this.playerDamage} dmg at [${i}x${j}]`, debugLvl.full);
+          this.Log(`attacked enemy by ${this.playerDamage} dmg at [${i}x${j}]`, logLevels.full);
 
           if (enemy.isDead) {
           this.field[i][j] = emptyTileIndex;
           this.enemies[i][j] = null;
-          this.Log(`enemy has died`, debugLvl.full);
+          this.Log(`enemy has died`, logLevels.full);
             
           var index = this.enemiesList.indexOf(enemy);
           if (index !== -1) {
@@ -410,31 +410,31 @@ class Game {
 
   createField() {
     let tileIndex = this.lookUpTypesInverse[this.tileWall];
-    this.Log(`creating field filled with tileId ${tileIndex}`, debugLvl.full);
+    this.Log(`creating field filled with tileId ${tileIndex}`, logLevels.full);
     this.field = Array(this.fieldSizeX).fill(0).map(x => Array(this.fieldSizeY).fill(tileIndex));
     this.Log(`created empty field`);
     // add rooms
     for (let i = 0; i < randomInRange(this.minRoomCount, this.maxRoomCount); i++)
       this.createRoom(new Vector2(randomInRange(0, this.fieldSizeX),randomInRange(0, this.fieldSizeY)), randomInRange( this.minRoomSize, this.maxRoomSize), randomInRange( this.minRoomSize, this.maxRoomSize));
-      this.Log(`added random amount of rooms with random size`, debugLvl.prod);
+      this.Log(`added random amount of rooms with random size`, logLevels.prod);
     // add halls
     for (let i = 0; i < randomInRange(this.minHallCount, this.maxHallCount); i++)
       this.createHallX(randomInRange(0, this.fieldSizeX - 1));
     
-      this.Log(`added random amount of halls by X axis`, debugLvl.prod);
+      this.Log(`added random amount of halls by X axis`, logLevels.prod);
     for (let i = 0; i < randomInRange(this.minHallCount, this.maxHallCount); i++)
       this.createHallY(randomInRange(0, this.fieldSizeY-1));
-      this.Log(`added random amount of halls by Y axis`, debugLvl.prod);
+      this.Log(`added random amount of halls by Y axis`, logLevels.prod);
       // 
     this.createBorder();
     // 
-    this.LogObject(`field`, this.field, debugLvl.full)
+    this.LogObject(`field`, this.field, logLevels.full)
     this.calculateEmptySpace();
   }
 
   createRoom(positionXY, width, length) {
     let tileIndex = this.lookUpTypesInverse[this.tileBase];
-    this.Log(`creating room at ${positionXY} ${width}x${length} / tileId ${tileIndex}`, debugLvl.full);
+    this.Log(`creating room at ${positionXY} ${width}x${length} / tileId ${tileIndex}`, logLevels.full);
     //
     for (let i = positionXY.x; i < positionXY.x + width; i++) {
       for (let j = positionXY.y; j < positionXY.y + length; j++) {
@@ -446,14 +446,14 @@ class Game {
 
   createHallX(position) {
     let tileIndex = this.lookUpTypesInverse[this.tileBase];
-    this.Log(`creating hall X at ${position} / tileId ${tileIndex}`, debugLvl.full);
+    this.Log(`creating hall X at ${position} / tileId ${tileIndex}`, logLevels.full);
     // 
     for (let i = 0; i < this.fieldSizeY; i++)
       this.field[position][i] = tileIndex;
   }
   createHallY(position) {
     let tileIndex = this.lookUpTypesInverse[this.tileBase];
-    this.Log(`creating hall Y at ${position} / tileId ${tileIndex}`, debugLvl.full);
+    this.Log(`creating hall Y at ${position} / tileId ${tileIndex}`, logLevels.full);
     // 
     for (let i = 0; i < this.fieldSizeX; i++)
       this.field[i][position] = tileIndex;
@@ -487,7 +487,7 @@ class Game {
       )
     });
 
-    this.LogObject(`spaces`, this.emptySpaces, debugLvl.full)
+    this.LogObject(`spaces`, this.emptySpaces, logLevels.full)
   }
 
   popRandomEmptySpace() {
@@ -506,7 +506,7 @@ class Game {
       var position = this.popRandomEmptySpace();
       this.field[position.x][position.y] = tileIndex;
       usedPositions.push(position);
-      this.Log(`added tile ${tileName} at position ${position}`, debugLvl.full);
+      this.Log(`added tile ${tileName} at position ${position}`, logLevels.full);
     }
     return usedPositions;
   }
@@ -530,20 +530,20 @@ class Game {
   addEnemies() {
     this.Log(`adding enemies`);
     let enemyPositions = this.addItemsToField(this.tileEnemy, this.enemyCount);
-    this.LogObject(`enemy positions`, enemyPositions, debugLvl.full);
+    this.LogObject(`enemy positions`, enemyPositions, logLevels.full);
     this.enemiesList = Enemy.processPositionsToEnemies(enemyPositions);
     this.enemies = Enemy.createEnemyMatrix(this.fieldSizeX, this.fieldSizeY , this.enemiesList);
-    this.LogObject(`enemiesList`, this.enemiesList, debugLvl.full);
+    this.LogObject(`enemiesList`, this.enemiesList, logLevels.full);
     this.LogObject(`enemies`, this.enemies);
   }
   // ----------------------------
 
   renderScreen() {
     // render field
-    this.Log(`removig current fieldRoot childred`, debugLvl.full);
+    this.Log(`removig current fieldRoot childred`, logLevels.full);
     this.fieldRoot.replaceChildren();
     // 
-    this.Log(`starting rendering screen`, debugLvl.full);
+    this.Log(`starting rendering screen`, logLevels.full);
     this.field.forEach((row, i) => {
       row.forEach((val, j) => {
         var newElement = document.createElement("div");
@@ -587,16 +587,16 @@ class Game {
     this.inventoryRoot.appendChild(playerHealthElement);
     this.inventoryRoot.appendChild(playerDamageElement);
     // 
-    this.Log(`finished rendering screen`, debugLvl.full);
+    this.Log(`finished rendering screen`, logLevels.full);
   }
 
   // 
-  Log(message, lvl = debugLvl.dev) {
+  Log(message, lvl = logLevels.dev) {
     if (this.logLevel <= lvl) {
       console.log(`[${new Date().toLocaleString()}] ${message}`);
     }
   }
-  LogObject(message, object, lvl = debugLvl.dev) {
+  LogObject(message, object, lvl = logLevels.dev) {
     if (this.logLevel <= lvl) {
       console.log(`[${new Date().toLocaleString()}] ${message} =>`);
       console.log(object);
