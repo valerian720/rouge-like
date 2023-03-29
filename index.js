@@ -115,6 +115,7 @@ class Game {
   swordCount = 2;
   healthPotionCount = 10;
   enemyCount = 10;
+  enemySearchRadius = 5;
   // 
   playerAttackRange = 1;
   maxPlayerHealth = 100;
@@ -215,6 +216,7 @@ class Game {
             break;
           
           case 'r':
+          case 'к':
             this.progressLevel();
             break;
         
@@ -222,7 +224,7 @@ class Game {
             break;
         }
         // 
-        this.enemyTick();
+      this.enemyTick();
       this.renderScreen();
     }
     );
@@ -231,25 +233,29 @@ class Game {
   enemyTick() {
     let enemyToMoveList = [...this.enemiesList];
     for (let i = 0; i < this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel); i++) {
-      if (i< this.enemiesList.length) {
+      if (i < this.enemiesList.length) {
         let curEnemy = randomChoice(enemyToMoveList);
+        this.LogObject(`selected enemy to act (${i} of ${this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, debugLvl.full);
 
         var index = enemyToMoveList.indexOf(curEnemy);
           if (index !== -1) {
             enemyToMoveList.splice(index, 1);
           }
 
-        let rndX = randomInRange(1, 4)-2;
-        let rndY = randomInRange(1, 4) - 2;
+        let rndX = randomInRange(-1, 2);
+        let rndY = randomInRange(-1, 2);
+        this.Log(`enemy will move by ${rndX}(x) ${rndY}(y)`, debugLvl.full);
 
-        if ((curEnemy.position.minus(this.playerPosition)).length < 5) { // semi random direction if in activation radius
+        if ((curEnemy.position.minus(this.playerPosition)).length < this.enemySearchRadius) { // semi random direction if in activation radius
           var dirVector = curEnemy.position.minus(this.playerPosition).normalizeRound();
           rndX = dirVector.x;
           rndY = dirVector.y;
+          this.Log(`player detected, enemy will move by ${rndX}(x) ${rndY}(y)`, debugLvl.full);
         }
 
         let hasMoved = this.moveTile(curEnemy.position, rndX, rndY);
         if (hasMoved) {
+          this.Log(`enemy move is succesfull`, debugLvl.full);
           let curPosition = curEnemy.position;
           this.enemies[curPosition.x][curPosition.y] = curEnemy; // add cur pos after move
           this.enemies[curPosition.x-rndX][curPosition.y-rndY] = null; // remove previous pos after move
@@ -324,7 +330,6 @@ class Game {
   }
   // ----
   decreaseHealth(originalPos, deltaX, deltaY) {
-    this.Log(`health decreased`);
     let damage = 0;
 
     if (this.enemies[originalPos.x][originalPos.y] != null) {
@@ -334,9 +339,13 @@ class Game {
       damage = this.enemies[originalPos.x + deltaX][originalPos.y + deltaY].damage;
     }
 
+    this.Log(`player got hurt by ${damage}`);
+
     this.playerHealth -= damage;
     // 
     if (this.playerHealth < 0) {
+      this.Log(`player has died; health = ${this.playerHealth}`);
+
       alert("game over");
       this.init();
     }
@@ -367,10 +376,12 @@ class Game {
           // have found enemy
           let enemy = this.enemies[i][j];
           enemy.receaveDamage(this.playerDamage);
+          this.Log(`attacked enemy by ${this.playerDamage} dmg at [${i}x${j}]`, debugLvl.full);
 
           if (enemy.isDead) {
           this.field[i][j] = emptyTileIndex;
           this.enemies[i][j] = null;
+          this.Log(`enemy has died`, debugLvl.full);
             
           var index = this.enemiesList.indexOf(enemy);
           if (index !== -1) {
@@ -385,7 +396,7 @@ class Game {
   // ----------------------------
 
   updateFieldSize() {
-    // ?console
+    // ?
     var size = this.fieldRoot.getBoundingClientRect();
     this.fieldSizeX = size.width % this.tileSize / 2 + 1;
     this.fieldSizeY = size.height % this.tileSize / 2 + 1;
