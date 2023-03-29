@@ -235,30 +235,32 @@ class Game {
     for (let i = 0; i < this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel); i++) {
       if (i < this.enemiesList.length) {
         let curEnemy = randomChoice(enemyToMoveList);
-        this.LogObject(`selected enemy to act (${i+1} of ${this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, debugLvl.full);
+        if (curEnemy !== null) {
+          this.LogObject(`selected enemy to act (${i+1} of ${this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, debugLvl.full);
 
-        var index = enemyToMoveList.indexOf(curEnemy);
-          if (index !== -1) {
-            enemyToMoveList.splice(index, 1);
+          var index = enemyToMoveList.indexOf(curEnemy);
+            if (index !== -1) {
+              enemyToMoveList.splice(index, 1);
+            }
+
+          let rndX = randomInRange(-1, 2);
+          let rndY = randomInRange(-1, 2);
+          this.Log(`enemy will move by ${rndX}(x) ${rndY}(y)`, debugLvl.full);
+
+          if ((curEnemy.position.minus(this.playerPosition)).length < this.enemySearchRadius) { // semi random direction if in activation radius
+            var dirVector = curEnemy.position.minus(this.playerPosition).normalizeRound();
+            rndX = dirVector.x;
+            rndY = dirVector.y;
+            this.Log(`player detected, enemy will move by ${rndX}(x) ${rndY}(y)`, debugLvl.full);
           }
 
-        let rndX = randomInRange(-1, 2);
-        let rndY = randomInRange(-1, 2);
-        this.Log(`enemy will move by ${rndX}(x) ${rndY}(y)`, debugLvl.full);
-
-        if ((curEnemy.position.minus(this.playerPosition)).length < this.enemySearchRadius) { // semi random direction if in activation radius
-          var dirVector = curEnemy.position.minus(this.playerPosition).normalizeRound();
-          rndX = dirVector.x;
-          rndY = dirVector.y;
-          this.Log(`player detected, enemy will move by ${rndX}(x) ${rndY}(y)`, debugLvl.full);
-        }
-
-        let hasMoved = this.moveTile(curEnemy.position, rndX, rndY);
-        if (hasMoved) {
-          this.Log(`enemy move is succesfull`, debugLvl.full);
-          let curPosition = curEnemy.position;
-          this.enemies[curPosition.x][curPosition.y] = curEnemy; // add cur pos after move
-          this.enemies[curPosition.x-rndX][curPosition.y-rndY] = null; // remove previous pos after move
+          let hasMoved = this.moveTile(curEnemy.position, rndX, rndY);
+          if (hasMoved) {
+            this.Log(`enemy move is succesfull`, debugLvl.full);
+            let curPosition = curEnemy.position;
+            this.enemies[curPosition.x][curPosition.y] = curEnemy; // add cur pos after move
+            this.enemies[curPosition.x-rndX][curPosition.y-rndY] = null; // remove previous pos after move
+          }
         }
       }
     }
