@@ -479,20 +479,6 @@ class Field extends Logable {
       this.fieldMatrix[originalPos.x][originalPos.y] = originalEntity;
       ret = true;
     }
-    // let currentTileSprite = this.lookUpTypes[this.field[originalPos.x][originalPos.y]];
-    // let nextTileSprite = this.lookUpTypes[this.field[originalPos.x + deltaX][originalPos.y + deltaY]];
-    // //
-    // this.spriteLogicAdditional(currentTileSprite, nextTileSprite, originalPos, deltaX, deltaY);
-    // 
-    // if (this.spriteLogicCanGo(currentTileSprite, nextTileSprite)) {
-      // this.field[originalPos.x][originalPos.y] = this.lookUpTypesInverse[this.spriteLogicStartLocation(currentTileSprite, nextTileSprite)];
-      // this.field[originalPos.x + deltaX][originalPos.y + deltaY] = this.lookUpTypesInverse[this.spriteLogicFinishLocation(currentTileSprite, nextTileSprite)];
-    
-      // originalPos.x = originalPos.x + deltaX;
-      // originalPos.y = originalPos.y + deltaY;
-      // 
-    //   ret = true;
-    // }
     return ret;
   }
 
@@ -564,56 +550,6 @@ class EnemyProcessor extends Logable { // hive mind
 class Game extends Logable {
   fieldClass = 'field';
   inventoryClass = 'inventory';
-  // // 
-  // tileSize = 50; 
-  // // 
-  // logLevel = logLevels.prod;
-  // // -------------
-  // // map generation settings
-  // fieldSizeX = 10;
-  // fieldSizeY = 10;
-  // fitTilesToScreen = true;
-  // // 
-  // minRoomCount = 5;
-  // maxRoomCount = 10;
-
-  // minRoomSize = 3;
-  // maxRoomSize = 8;
-  // // 
-  // minHallCount = 3;
-  // maxHallCount = 5;
-  // // -------------
-  // // gameplay settings
-  // swordCount = 2;
-  // healthPotionCount = 10;
-  // enemyCount = 10;
-  // enemySearchRadius = 5;
-  // // 
-  // playerAttackRange = 1;
-  // maxPlayerHealth = 100;
-  // playerDamage = 20;
-  // maxPlayerDamage = 20;
-  // // 
-  // // 
-  // healthPotionHeal = 30;
-  // swordDamageIncrease = 20;
-  // // 
-  // maxEnemyMovePerTick = 5;
-  // difficultyActiveEnemyPerLevel = 5; // +1 active enemy per 5 levels
-  // // -------------
-  // // stored values
-  // field = [];
-  // // 
-  // enemies = [];
-  // enemiesList = [];
-  // playerPosition = null;
-  // // 
-  // // 
-  // emptySpaces = [];
-  // // 
-  // // 
-  // playerHealth = this.maxPlayerHealth;
-  // playerDamage = this.maxPlayerDamage;
   // // -------------
   levelNumber = 1;
   fieldRoot = null;
@@ -637,8 +573,6 @@ class Game extends Logable {
 
     this.prepareAdditionalLogic();
     // 
-    // this.playerHealth = this.maxPlayerHealth;
-    // this.playerDamage = this.maxPlayerDamage;
     this.levelNumber = 1;
     // 
     this.renderScreen(this.field.fieldMatrix); // render first screen without additional logic
@@ -668,20 +602,6 @@ class Game extends Logable {
     this.prepareAdditionalLogic();
     // 
     this.renderFrame();
-    
-    // 
-    // if(this.fitTilesToScreen)
-    //   this.updateFieldSize();
-    // // 
-    // this.createField();
-    // // //////
-    // this.addHealthPotions();
-    // this.addSwords();
-
-    // this.addPlayer();
-    // this.addEnemies();
-    // //
-    // this.renderScreen();
   }
 
   captureRoot() {
@@ -690,138 +610,6 @@ class Game extends Logable {
     this.Log(`got html element as root with class = '${this.fieldClass}'`);
   }
   // ----------------------------
-  // game loop
-
-  
-  // enemyTick() {
-  //   let enemyToMoveList = [...this.enemiesList];
-  //   for (let i = 0; i < this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel); i++) {
-  //     if (i < this.enemiesList.length) {
-  //       let curEnemy = randomChoice(enemyToMoveList);
-  //       if (curEnemy !== null) {
-  //         this.LogObject(`selected enemy to act (${i+1} of ${this.maxEnemyMovePerTick + ~~(this.levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, logLevels.full);
-
-  //         var index = enemyToMoveList.indexOf(curEnemy);
-  //           if (index !== -1) {
-  //             enemyToMoveList.splice(index, 1);
-  //           }
-
-  //         let rndX = randomInRange(-1, 2);
-  //         let rndY = randomInRange(-1, 2);
-  //         this.Log(`enemy will move by ${rndX}(x) ${rndY}(y)`, logLevels.full);
-
-  //         if ((curEnemy.position.minus(this.playerPosition)).length < this.enemySearchRadius) { // semi random direction if in activation radius
-  //           var dirVector = curEnemy.position.minus(this.playerPosition).normalizeRound();
-  //           rndX = dirVector.x;
-  //           rndY = dirVector.y;
-  //           this.Log(`player detected, enemy will move by ${rndX}(x) ${rndY}(y)`, logLevels.full);
-  //         }
-
-  //         let hasMoved = this.moveTile(curEnemy.position, rndX, rndY);
-  //         if (hasMoved) {
-  //           this.Log(`enemy move is succesfull`, logLevels.full);
-  //           let curPosition = curEnemy.position;
-  //           this.enemies[curPosition.x][curPosition.y] = curEnemy; // add cur pos after move
-  //           this.enemies[curPosition.x-rndX][curPosition.y-rndY] = null; // remove previous pos after move
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
-
-  // // game logic
-  // spriteLogicCanGo(originalSprite, nextSprite) { // ret true / false
-  //   let ret = true;
-
-  //   if (originalSprite === this.tileWall)
-  //     ret = false;
-  //   if (originalSprite === this.tileBase)
-  //     ret = false;
-  //   if (nextSprite === this.tileWall)
-  //     ret = false;
-  //   if (nextSprite === this.tileEnemy)
-  //     ret = false;
-  //   if (nextSprite === this.tilePlayer)
-  //     ret = false;
-
-  //   return ret;
-  // }
-
-  // spriteLogicStartLocation(originalSprite, nextSprite) { // ret sprite name
-  //   let ret = this.tileBase;
-  //   return ret;
-  // }
-  
-  // spriteLogicFinishLocation(originalSprite, nextSprite) { // ret sprite name
-  //   let ret = originalSprite;
-  //   return ret;
-  // }
-  // spriteLogicAdditional(originalSprite, nextSprite, originalPos, deltaX, deltaY) { // run needed function
-  //   if (originalSprite === this.tilePlayer) {
-  //     if (nextSprite === this.tileEnemy) {
-  //       this.decreaseHealth(originalPos, deltaX, deltaY);
-  //     }
-  //     if (nextSprite === this.tileHealthPotion) {
-  //       this.increaseHealth();
-  //     }
-  //     if (nextSprite === this.tileSword) {
-  //       this.increaseDamage();
-  //     }
-  //   }
-
-  //   if (originalSprite === this.tileEnemy) {
-  //     if (nextSprite === this.tilePlayer) {
-  //       this.decreaseHealth(originalPos, deltaX, deltaY);
-  //     }
-  //   }
-  // }
-  // // ----
-  // decreaseHealth(originalPos, deltaX, deltaY) {
-  //   let damage = 0;
-
-  //   if (this.enemies[originalPos.x][originalPos.y] != null) {
-  //     damage = this.enemies[originalPos.x][originalPos.y].damage;
-  //   }
-  //   if (this.enemies[originalPos.x+deltaX][originalPos.y+deltaY] != null) {
-  //     damage = this.enemies[originalPos.x + deltaX][originalPos.y + deltaY].damage;
-  //   }
-
-  //   this.Log(`player got hurt by ${damage}`);
-
-  //   this.playerHealth -= damage;
-  //   // 
-  //   if (this.playerHealth < 0) {
-  //     this.Log(`player has died; health = ${this.playerHealth}`);
-
-  //     alert("game over");
-  //     this.init();
-  //   }
-  // }
-
-  // increaseHealth() {
-  //   this.Log(`health increased`);
-  //   this.playerHealth += this.healthPotionHeal;
-  //   if (this.playerHealth > this.maxPlayerHealth) {
-  //     this.playerHealth = this.maxPlayerHealth;
-  //   }
-
-  // }
-
-  // increaseDamage() {
-  //   this.Log(`damage increased`);
-  //   this.playerDamage += this.swordDamageIncrease;
-  // }
-  
-
-
-  // ----------------------------
-
-
-  // 
-
-
-
   renderScreen(fieldMatrix) {
     // render field
     this.Log(`removig current fieldRoot childred`, logLevels.full);
