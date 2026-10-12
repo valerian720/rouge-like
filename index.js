@@ -33,7 +33,8 @@ randomChoice = (arr) => arr[Math.floor(arr.length * Math.random())];
 const logLevels = Enum(['full', 'dev', 'prod', 'none']);
 
 class Logable {
-  logLevel = logLevels.prod;
+  // logLevel = logLevels.prod;
+  logLevel = logLevels.dev;
   // 
   Log(message, lvl = logLevels.dev) {
     if (this.logLevel <= lvl) {
@@ -315,9 +316,10 @@ class Field extends Logable {
   updateFieldSize() {
     // ?
     // var size = this.fieldRoot.getBoundingClientRect();
+    const additionalTiles = 2;
     var size = { width: 1920, height: 1080 };
-    this.fieldSizeX = size.width % TileBase.tileSize / 2 + 1;
-    this.fieldSizeY = size.height % TileBase.tileSize / 2 + 1;
+    this.fieldSizeX = size.width % TileBase.tileSize / 2 + additionalTiles;
+    this.fieldSizeY = size.height % TileBase.tileSize / 2 + additionalTiles;
 
     this.Log(`updated field size to ${this.fieldSizeX}x${this.fieldSizeY}`);
   }
