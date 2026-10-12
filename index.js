@@ -1,41 +1,44 @@
-class Vector2 { 
+class Vector2 {
   x = 0;
   y = 0;
   constructor(x, y) {
     this.x = x;
     this.y = y;
   }
-  toString(){
+  toString() {
     return `[${this.x}, ${this.y}]`;
   }
   minus(b) {
     return new Vector2(b.x - this.x, b.y - this.y);
   }
-  get length(){
-  return Math.sqrt(this.x**2 + this.y**2)
+  get length() {
+    return Math.sqrt(this.x ** 2 + this.y ** 2);
   }
   normalize() {
     return new Vector2(this.x / this.length, this.y / this.length);
   }
   normalizeRound() {
-    return new Vector2(Math.round(this.x / this.length), Math.round(this.y / this.length));
+    return new Vector2(
+      Math.round(this.x / this.length),
+      Math.round(this.y / this.length),
+    );
   }
 }
 
-function Enum(values){
-  const enumObject = values.reduce((obj, cur, i) => ({ ...obj, [cur]: i }), {});;
+function Enum(values) {
+  const enumObject = values.reduce((obj, cur, i) => ({ ...obj, [cur]: i }), {});
   return Object.freeze(enumObject);
 }
 
 randomInRange = (min, max) => Math.floor(Math.random() * (max - min)) + min;
 randomChoice = (arr) => arr[Math.floor(arr.length * Math.random())];
 
-const logLevels = Enum(['full', 'dev', 'prod', 'none']);
+const logLevels = Enum(["full", "dev", "prod", "none"]);
 
 class Logable {
   // logLevel = logLevels.prod;
   logLevel = logLevels.dev;
-  // 
+  //
   Log(message, lvl = logLevels.dev) {
     if (this.logLevel <= lvl) {
       console.log(`[${new Date().toLocaleString()}] ${message}`);
@@ -52,9 +55,9 @@ class Logable {
 // ---------------------------
 class TileBase extends Logable {
   static tileSize = 50;
-  tileBaseName = 'tile';
-  tileName = '';
-  // 
+  tileBaseName = "tile";
+  tileName = "";
+  //
   position = null;
   difficulty = 1;
 
@@ -63,8 +66,7 @@ class TileBase extends Logable {
   }
 }
 
-class TilePath extends TileBase {
-}
+class TilePath extends TileBase {}
 
 //
 
@@ -74,20 +76,19 @@ class Entity extends TileBase {
   health = 50;
   damage = 20;
 
-  get isDead() { return this.health <= 0; }
+  get isDead() {
+    return this.health <= 0;
+  }
 
   receaveDamage(damage) {
     this.health -= damage;
-    if (this.isDead)
-      this.onDeathLogic();
+    if (this.isDead) this.onDeathLogic();
   }
 
-  onDeathLogic() {
-  }
+  onDeathLogic() {}
 
   dealDamage(target) {
-    if (target instanceof Entity)
-    target.receaveDamage(this.damage);
+    if (target instanceof Entity) target.receaveDamage(this.damage);
   }
 
   increaseDamage(amount) {
@@ -96,31 +97,27 @@ class Entity extends TileBase {
 
   heal(amount) {
     this.health += amount;
-    if (this.health > this.maxHealth)
-      this.health = this.maxHealth;
+    if (this.health > this.maxHealth) this.health = this.maxHealth;
   }
 
   collisionCheck(target) {
     let ret = true;
 
-    if (target instanceof TileWall)
-      ret = false;
-    if (target instanceof Entity)
-      ret = false;
-    
+    if (target instanceof TileWall) ret = false;
+    if (target instanceof Entity) ret = false;
+
     return ret;
   }
   getTrailTile() {
     return new TilePath();
   }
 
-  applyCollision(target) {
-  }
+  applyCollision(target) {}
 }
 
 class Enemy extends Entity {
-  tileName = 'tileE';
-  // 
+  tileName = "tileE";
+  //
   health = 50;
   damage = 15;
 
@@ -129,7 +126,9 @@ class Enemy extends Entity {
 
   difficultyMultyplier = 3;
 
-  set difficulty(value) { this.health += value * this.difficultyMultyplier}
+  set difficulty(value) {
+    this.health += value * this.difficultyMultyplier;
+  }
 
   constructor() {
     super();
@@ -137,28 +136,27 @@ class Enemy extends Entity {
   }
 
   applyCollision(target) {
-    if(target instanceof Player)
-      this.dealDamage(target);
+    if (target instanceof Player) this.dealDamage(target);
   }
 }
 
-// 
+//
 
 class Player extends Entity {
-  tileName = 'tileP';
+  tileName = "tileP";
   // gameplay settings
   playerAttackRange = 1;
   maxHealth = 100;
   minDamage = 20;
-  // 
+  //
   gameManager = null;
-  // 
+  //
   constructor(gameManager) {
     super();
     this.reset();
-    // 
+    //
     this.gameManager = gameManager;
-    // 
+    //
     this.playerMoveBind();
   }
 
@@ -173,58 +171,67 @@ class Player extends Entity {
   }
 
   playerMoveBind() {
-    document.body.addEventListener('keypress',
-      (e) => {
-        switch (e.key) {
-          case 'w':
-          case 'ц':
-            this.gameManager.field.moveTile(this, -1, 0);
-            break;
-          
-          case 'a':
-          case 'ф':
-            this.gameManager.field.moveTile(this, 0, -1);
-            break;
-        
-          case 's':
-          case 'ы':
-            this.gameManager.field.moveTile(this, 1, 0);
-            break;
-        
-          case 'd':
-          case 'в':
-            this.gameManager.field.moveTile(this, 0, 1);
-            break;
-          
-          case ' ':
-            this.playerAttack();
-            break;
-          
-          case 'r':
-          case 'к':
-            this.gameManager.progressLevel();
-            break;
-        
-          default:
-            break;
-        }
-      // 
+    document.body.addEventListener("keypress", (e) => {
+      switch (e.key) {
+        case "w":
+        case "ц":
+          this.gameManager.field.moveTile(this, -1, 0);
+          break;
+
+        case "a":
+        case "ф":
+          this.gameManager.field.moveTile(this, 0, -1);
+          break;
+
+        case "s":
+        case "ы":
+          this.gameManager.field.moveTile(this, 1, 0);
+          break;
+
+        case "d":
+        case "в":
+          this.gameManager.field.moveTile(this, 0, 1);
+          break;
+
+        case " ":
+          this.playerAttack();
+          break;
+
+        case "r":
+        case "к":
+          this.gameManager.progressLevel();
+          break;
+
+        default:
+          break;
+      }
+      //
       this.gameManager.renderFrame();
-    }
-    );
+    });
   }
-  // 
+  //
   playerAttack() {
     this.Log(`playerAttack`);
     let field = this.gameManager.field.fieldMatrix;
 
-    for (let i = this.position.x - this.playerAttackRange; i < this.position.x + this.playerAttackRange+1; i++) {
-      for (let j = this.position.y - this.playerAttackRange; j < this.position.y + this.playerAttackRange+1; j++) {
+    for (
+      let i = this.position.x - this.playerAttackRange;
+      i < this.position.x + this.playerAttackRange + 1;
+      i++
+    ) {
+      for (
+        let j = this.position.y - this.playerAttackRange;
+        j < this.position.y + this.playerAttackRange + 1;
+        j++
+      ) {
         if (field[i][j] instanceof Enemy) {
           // have found enemy
           let enemy = field[i][j];
           this.dealDamage(enemy);
-          this.Log(`attacked enemy by ${this.damage} dmg at [${i}x${j}]`, logLevels.full);
+          this.Log(
+            `attacked enemy by ${this.damage} dmg at [${i}x${j}]`,
+            logLevels.full,
+          );
         }
       }
     }
@@ -233,40 +240,38 @@ class Player extends Entity {
   applyCollision(target) {
     target.dealDamage(this);
   }
-
 }
 
-// 
+//
 
 class Pickup extends TileBase {
-  applyEffect(target) {
-  }
+  applyEffect(target) {}
 }
 
-class Sword extends Pickup { 
-  tileName = 'tileSW';
+class Sword extends Pickup {
+  tileName = "tileSW";
   // gameplay settings
   swordDamageIncrease = 20;
-  // 
+  //
   applyEffect(target) {
     target.increaseDamage(this.swordDamageIncrease);
   }
 }
 
-class HealPotion extends Pickup { 
-  tileName = 'tileHP';
+class HealPotion extends Pickup {
+  tileName = "tileHP";
   // gameplay settings
   healthPotionHeal = 30;
-  // 
+  //
   applyEffect(target) {
     target.heal(this.healthPotionHeal);
   }
 }
 
-// 
+//
 
 class TileWall extends TileBase {
-  tileName = 'tileW';
+  tileName = "tileW";
 }
 
 //
@@ -280,16 +285,16 @@ class Field extends Logable {
   fieldSizeX = 10;
   fieldSizeY = 10;
   fitTilesToScreen = true;
-  // 
+  //
   minRoomCount = 5;
   maxRoomCount = 10;
 
   minRoomSize = 3;
   maxRoomSize = 8;
-  // 
+  //
   minHallCount = 3;
   maxHallCount = 5;
-  // 
+  //
   fieldMatrix = [];
   emptySpaces = [];
   difficulty = 1;
@@ -301,9 +306,8 @@ class Field extends Logable {
 
   generateField(difficulty = 1) {
     this.Log(`generateField`);
-    if(this.fitTilesToScreen)
-      this.updateFieldSize();
-    // 
+    if (this.fitTilesToScreen) this.updateFieldSize();
+    //
     this.createField();
     // //////
     this.addHealthPotions();
@@ -312,14 +316,14 @@ class Field extends Logable {
     this.addEnemies();
   }
 
-  // 
+  //
   updateFieldSize() {
     // ?
     // var size = this.fieldRoot.getBoundingClientRect();
     const additionalTiles = 2;
     var size = { width: 1920, height: 1080 };
-    this.fieldSizeX = size.width % TileBase.tileSize / 2 + additionalTiles;
-    this.fieldSizeY = size.height % TileBase.tileSize / 2 + additionalTiles;
+    this.fieldSizeX = (size.width % TileBase.tileSize) / 2 + additionalTiles;
+    this.fieldSizeY = (size.height % TileBase.tileSize) / 2 + additionalTiles;
 
     this.Log(`updated field size to ${this.fieldSizeX}x${this.fieldSizeY}`);
   }
@@ -328,33 +332,57 @@ class Field extends Logable {
 
   createField() {
     this.Log(`creating field filled with TileWall`, logLevels.full);
-    this.fieldMatrix = Array(this.fieldSizeX).fill(0).map(x => Array(this.fieldSizeY).fill(new TileWall()));
+    this.fieldMatrix = Array(this.fieldSizeX)
+      .fill(0)
+      .map((x) => Array(this.fieldSizeY).fill(new TileWall()));
     this.Log(`created empty field`);
     // add rooms
-    for (let i = 0; i < randomInRange(this.minRoomCount, this.maxRoomCount); i++)
-      this.createRoom(new Vector2(randomInRange(0, this.fieldSizeX),randomInRange(0, this.fieldSizeY)), randomInRange( this.minRoomSize, this.maxRoomSize), randomInRange( this.minRoomSize, this.maxRoomSize));
-      this.Log(`added random amount of rooms with random size`, logLevels.prod);
+    for (
+      let i = 0;
+      i < randomInRange(this.minRoomCount, this.maxRoomCount);
+      i++
+    )
+      this.createRoom(
+        new Vector2(
+          randomInRange(0, this.fieldSizeX),
+          randomInRange(0, this.fieldSizeY),
+        ),
+        randomInRange(this.minRoomSize, this.maxRoomSize),
+        randomInRange(this.minRoomSize, this.maxRoomSize),
+      );
+    this.Log(`added random amount of rooms with random size`, logLevels.prod);
     // add halls
-    for (let i = 0; i < randomInRange(this.minHallCount, this.maxHallCount); i++)
+    for (
+      let i = 0;
+      i < randomInRange(this.minHallCount, this.maxHallCount);
+      i++
+    )
       this.createHallX(randomInRange(0, this.fieldSizeX - 1));
-    
-      this.Log(`added random amount of halls by X axis`, logLevels.prod);
-    for (let i = 0; i < randomInRange(this.minHallCount, this.maxHallCount); i++)
-      this.createHallY(randomInRange(0, this.fieldSizeY-1));
-      this.Log(`added random amount of halls by Y axis`, logLevels.prod);
-      // 
+
+    this.Log(`added random amount of halls by X axis`, logLevels.prod);
+    for (
+      let i = 0;
+      i < randomInRange(this.minHallCount, this.maxHallCount);
+      i++
+    )
+      this.createHallY(randomInRange(0, this.fieldSizeY - 1));
+    this.Log(`added random amount of halls by Y axis`, logLevels.prod);
+    //
     this.createBorder();
-    // 
-    this.LogObject(`field`, this.fieldMatrix, logLevels.full)
+    //
+    this.LogObject(`field`, this.fieldMatrix, logLevels.full);
     this.calculateEmptySpace();
   }
 
   createRoom(positionXY, width, length) {
-    this.Log(`creating room at ${positionXY} ${width}x${length}`, logLevels.full);
+    this.Log(
+      `creating room at ${positionXY} ${width}x${length}`,
+      logLevels.full,
+    );
     //
     for (let i = positionXY.x; i < positionXY.x + width; i++) {
       for (let j = positionXY.y; j < positionXY.y + length; j++) {
-        if(i < this.fieldSizeX && j < this.fieldSizeY)
+        if (i < this.fieldSizeX && j < this.fieldSizeY)
           this.fieldMatrix[i][j] = new TilePath();
       }
     }
@@ -362,13 +390,13 @@ class Field extends Logable {
 
   createHallX(position) {
     this.Log(`creating hall X at ${position}`, logLevels.full);
-    // 
+    //
     for (let i = 0; i < this.fieldSizeY; i++)
       this.fieldMatrix[position][i] = new TilePath();
   }
   createHallY(position) {
     this.Log(`creating hall Y at ${position}`, logLevels.full);
-    // 
+    //
     for (let i = 0; i < this.fieldSizeX; i++)
       this.fieldMatrix[i][position] = new TilePath();
   }
@@ -376,13 +404,13 @@ class Field extends Logable {
   createBorder() {
     this.Log(`creating border`);
     for (let i = 0; i < this.fieldSizeX; i++) {
-    this.fieldMatrix[i][0] = new TileWall();
-      this.fieldMatrix[i][this.fieldSizeY-1] = new TileWall();
+      this.fieldMatrix[i][0] = new TileWall();
+      this.fieldMatrix[i][this.fieldSizeY - 1] = new TileWall();
     }
 
     for (let i = 0; i < this.fieldSizeY; i++) {
       this.fieldMatrix[0][i] = new TileWall();
-      this.fieldMatrix[this.fieldSizeX-1][i] = new TileWall();
+      this.fieldMatrix[this.fieldSizeX - 1][i] = new TileWall();
     }
   }
   // ----------------------------
@@ -395,15 +423,14 @@ class Field extends Logable {
         if (val instanceof TilePath) {
           this.emptySpaces.push(new Vector2(i, j));
         }
-       }
-      )
+      });
     });
 
-    this.LogObject(`spaces`, this.emptySpaces, logLevels.full)
+    this.LogObject(`spaces`, this.emptySpaces, logLevels.full);
   }
 
   popRandomEmptySpace() {
-    var position = randomChoice(this.emptySpaces); 
+    var position = randomChoice(this.emptySpaces);
     var index = this.emptySpaces.indexOf(position);
     if (index !== -1) {
       this.emptySpaces.splice(index, 1);
@@ -429,7 +456,10 @@ class Field extends Logable {
     var position = this.popRandomEmptySpace();
     this.fieldMatrix[position.x][position.y] = tileObject;
     tileObject.position = position;
-    this.Log(`added tile ${tileObject} at position ${position}`, logLevels.full);
+    this.Log(
+      `added tile ${tileObject} at position ${position}`,
+      logLevels.full,
+    );
     return tileObject;
   }
 
@@ -464,7 +494,9 @@ class Field extends Logable {
     let ret = false;
     let originalPos = originalEntity.position;
 
-    let targetEntity = this.fieldMatrix[originalPos.x+deltaX][originalPos.y+deltaY];
+    let targetEntity = this.fieldMatrix[originalPos.x + deltaX][
+      originalPos.y + deltaY
+    ];
 
     if (targetEntity instanceof Entity) {
       originalEntity.applyCollision(targetEntity);
@@ -474,8 +506,10 @@ class Field extends Logable {
       if (targetEntity instanceof Pickup) {
         targetEntity.applyEffect(originalEntity);
       }
-      // swap 
-      this.fieldMatrix[originalPos.x][originalPos.y] = originalEntity.getTrailTile();
+      // swap
+      this.fieldMatrix[originalPos.x][
+        originalPos.y
+      ] = originalEntity.getTrailTile();
       originalPos.x += deltaX;
       originalPos.y += deltaY;
       this.fieldMatrix[originalPos.x][originalPos.y] = originalEntity;
@@ -483,19 +517,19 @@ class Field extends Logable {
     }
     return ret;
   }
-
 }
 
-class EnemyProcessor extends Logable { // hive mind
+class EnemyProcessor extends Logable {
+  // hive mind
   difficultyActiveEnemyPerLevel = 5;
   maxEnemyMovePerTick = 5;
   enemySearchRadius = 5;
-  // 
+  //
   gameManager = null;
   player = null;
   enemiesList = [];
-  // 
-  
+  //
+
   constructor(enemiesList, gameManager) {
     super();
     this.enemiesList = enemiesList;
@@ -507,76 +541,95 @@ class EnemyProcessor extends Logable { // hive mind
     this.enemiesList.forEach((enemy) => {
       if (enemy.isDead) {
         toPop.push(enemy);
-        this.gameManager.field.fieldMatrix[enemy.position.x][enemy.position.y] = enemy.getTrailTile();
+        this.gameManager.field.fieldMatrix[enemy.position.x][
+          enemy.position.y
+        ] = enemy.getTrailTile();
       }
     });
 
-    this.enemiesList = this.enemiesList.filter( (el) => !toPop.includes(el) );
+    this.enemiesList = this.enemiesList.filter((el) => !toPop.includes(el));
   }
-    
-  moveEnemies(levelNumber) {
 
+  moveEnemies(levelNumber) {
     let enemyToMoveList = [...this.enemiesList];
-    for (let i = 0; i < this.maxEnemyMovePerTick + Math.floor(levelNumber/this.difficultyActiveEnemyPerLevel); i++) {
+    for (
+      let i = 0;
+      i <
+      this.maxEnemyMovePerTick +
+        Math.floor(levelNumber / this.difficultyActiveEnemyPerLevel);
+      i++
+    ) {
       if (i < this.enemiesList.length) {
         let curEnemy = randomChoice(enemyToMoveList);
         if (curEnemy !== null) {
-          this.LogObject(`selected enemy to act (${i+1} of ${this.maxEnemyMovePerTick + Math.floor(levelNumber/this.difficultyActiveEnemyPerLevel)})`, curEnemy, logLevels.full);
+          this.LogObject(
+            `selected enemy to act (${i + 1} of ${
+              this.maxEnemyMovePerTick +
+              Math.floor(levelNumber / this.difficultyActiveEnemyPerLevel)
+            })`,
+            curEnemy,
+            logLevels.full,
+          );
 
           var index = enemyToMoveList.indexOf(curEnemy);
-            if (index !== -1) {
-              enemyToMoveList.splice(index, 1);
-            }
+          if (index !== -1) {
+            enemyToMoveList.splice(index, 1);
+          }
 
           let rndX = randomInRange(-1, 2);
           let rndY = randomInRange(-1, 2);
           this.Log(`enemy will move by ${rndX}(x) ${rndY}(y)`, logLevels.full);
 
-          if ((curEnemy.position.minus(this.gameManager.player.position)).length < this.enemySearchRadius) { // semi random direction if in activation radius
-            var dirVector = curEnemy.position.minus(this.gameManager.player.position).normalizeRound();
+          if (
+            curEnemy.position.minus(this.gameManager.player.position).length <
+            this.enemySearchRadius
+          ) {
+            // semi random direction if in activation radius
+            var dirVector = curEnemy.position
+              .minus(this.gameManager.player.position)
+              .normalizeRound();
             rndX = dirVector.x;
             rndY = dirVector.y;
-            this.Log(`player detected, enemy will move by ${rndX}(x) ${rndY}(y)`, logLevels.full);
+            this.Log(
+              `player detected, enemy will move by ${rndX}(x) ${rndY}(y)`,
+              logLevels.full,
+            );
           }
           let hasMoved = this.gameManager.field.moveTile(curEnemy, rndX, rndY);
-          if (hasMoved)
-            this.Log(`enemy move is succesfull`, logLevels.full);
+          if (hasMoved) this.Log(`enemy move is succesfull`, logLevels.full);
         }
       }
     }
   }
 }
 
-
-
 class Game extends Logable {
-  fieldClass = 'field';
-  inventoryClass = 'inventory';
+  fieldClass = "field";
+  inventoryClass = "inventory";
   // // -------------
   levelNumber = 1;
   fieldRoot = null;
   inventoryRoot = null;
-  // 
+  //
   field = null;
   player = null;
 
-
   constructor() {
     super();
-    this.Log('Starting...', logLevels.prod);
+    this.Log("Starting...", logLevels.prod);
     this.captureRoot();
   }
 
   init() {
-    this.Log('initialising game...', logLevels.prod);
-    // 
+    this.Log("initialising game...", logLevels.prod);
+    //
     this.player = new Player(this);
     this.field = new Field();
 
     this.prepareAdditionalLogic();
-    // 
+    //
     this.levelNumber = 1;
-    // 
+    //
     this.renderScreen(this.field.fieldMatrix); // render first screen without additional logic
   }
 
@@ -602,13 +655,15 @@ class Game extends Logable {
     this.levelNumber += 1;
     this.field.generateField();
     this.prepareAdditionalLogic();
-    // 
+    //
     this.renderFrame();
   }
 
   captureRoot() {
     this.fieldRoot = document.getElementsByClassName(this.fieldClass)[0];
-    this.inventoryRoot = document.getElementsByClassName(this.inventoryClass)[0];
+    this.inventoryRoot = document.getElementsByClassName(
+      this.inventoryClass,
+    )[0];
     this.Log(`got html element as root with class = '${this.fieldClass}'`);
   }
   // ----------------------------
@@ -616,32 +671,32 @@ class Game extends Logable {
     // render field
     this.Log(`removig current fieldRoot childred`, logLevels.full);
     this.fieldRoot.replaceChildren();
-    // 
+    //
     this.Log(`starting rendering screen`, logLevels.full);
     fieldMatrix.forEach((row, i) => {
       row.forEach((val, j) => {
         var newElement = document.createElement("div");
-        // 
+        //
         newElement.classList.add(val.tileBaseName);
-        if (val.tileName)
-          newElement.classList.add(val.tileName);
-        
-        newElement.style['top'] = `${i * TileBase.tileSize}px`;
-        newElement.style['left'] = `${j * TileBase.tileSize}px`;
+        if (val.tileName) newElement.classList.add(val.tileName);
+
+        newElement.style["top"] = `${i * TileBase.tileSize}px`;
+        newElement.style["left"] = `${j * TileBase.tileSize}px`;
         // proces health bars
         if (val instanceof Player || val instanceof Enemy) {
           var healthElement = document.createElement("div");
           healthElement.classList.add("health");
           let displayedHealth = val.health;
 
-          healthElement.style['width'] = `${TileBase.tileSize * displayedHealth / 100}px`;
-          // 
+          healthElement.style["width"] = `${
+            (TileBase.tileSize * displayedHealth) / 100
+          }px`;
+          //
           newElement.appendChild(healthElement);
         }
-        // 
+        //
         this.fieldRoot.appendChild(newElement);
-       }
-      )
+      });
     });
     // render inventory
     // ?
@@ -659,8 +714,7 @@ class Game extends Logable {
     this.inventoryRoot.appendChild(levelNumberElement);
     this.inventoryRoot.appendChild(playerHealthElement);
     this.inventoryRoot.appendChild(playerDamageElement);
-    // 
+    //
     this.Log(`finished rendering screen`, logLevels.full);
   }
-
 }
